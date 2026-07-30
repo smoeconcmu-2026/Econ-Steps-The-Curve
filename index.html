@@ -154,8 +154,11 @@
 
   <script>
     // Google Sheets GViz JSONP URL
-    const GVIZ_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQhjKb_brqHfYoslXHx8NT_rUtqJQAVI5XjozdR3zizF-A4yxsvHFkkdKfbae828026ef0A0nZalahH/gviz/tq?tqx=responseHandler:handleSheetData';
+// นำ ID ยาวๆ จาก URL ของ Google Sheets มาใส่ในอัญประกาศ ('...') ตรงนี้
+const SHEET_ID = '1kgpc09vkIvSMRpjjexqy1MikFbHnQib1upHSogIiTu0';
 
+// สร้าง URL สำหรับดึงข้อมูลผ่าน GViz JSONP
+const GVIZ_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=responseHandler:handleSheetData`;
     let rawData = [];
     let currentLang = 'th';
 
