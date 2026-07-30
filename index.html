@@ -31,8 +31,8 @@
     <!-- PAGE 1: Language Selection -->
     <section id="page-lang" class="flex flex-col items-center justify-center min-h-[60vh] text-center">
       <span class="bg-pink-100 text-pink-600 text-sm font-semibold px-4 py-1.5 rounded-full mb-3">Econ Steps The Curve</span>
-      <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-2">ยินดีต้อนรับ / Welcome</h2>
-      <p class="text-slate-500 mb-8">กรุณาเลือกภาษาเพื่อเริ่มต้นใช้งาน / Please select a language</p>
+      <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-2" id="welcome-heading">ระบบตรวจสอบสิทธิ์กิจกรรม</h2>
+      <p class="text-slate-500 mb-8" id="welcome-sub">กรุณาเลือกภาษาเพื่อเริ่มต้นใช้งาน / Please select a language</p>
       <div class="flex flex-col sm:flex-row gap-4 w-full max-w-xs sm:max-w-md">
         <button onclick="setLanguage('th')" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-semibold py-4 px-6 rounded-2xl shadow-lg hover:shadow-xl transition flex items-center justify-center gap-2 text-lg">
           🇹🇭 ภาษาไทย
@@ -104,7 +104,7 @@
         </div>
       </div>
 
-      <!-- Banner แสดงสิทธิ์รวมทั้งหมดที่จะเอาไปสุ่มรางวัล -->
+      <!-- Banner แสดงสิทธิ์รวมทั้งหมด -->
       <div class="bg-gradient-to-r from-pink-500 to-rose-500 text-white p-4 md:p-5 rounded-2xl shadow-md mb-4 flex flex-col sm:flex-row items-center justify-between gap-3">
         <div class="flex items-center gap-3">
           <div class="bg-white/20 p-3 rounded-xl text-2xl">🎁</div>
@@ -168,8 +168,10 @@
   </div>
 
   <script>
-    // ** อย่าลืมเปลี่ยน SHEET_ID ด้านล่างให้เป็น ID ของคุณ **
-    const SHEET_ID = '12PACX-1vQhjKb_brqHfYoslXHx8NT_rUtqJQAVI5XjozdR3zizF-A4yxsvHFkkdKfbae828026ef0A0nZalahH';
+    // ⚠️ นำ ID ของ Google Sheets (ตัวอย่าง: 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms) มาวางในอัญประกาศด้านล่างนี้
+    const SHEET_ID = '1kgpc09vkIvSMRpjjexqy1MikFbHnQib1upHSogIiTu0';
+    
+    // โครงสร้าง URL สำหรับ GViz API
     const GVIZ_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=responseHandler:handleSheetData`;
 
     let rawData = [];
@@ -191,7 +193,7 @@
       return isNaN(num) ? 0 : num;
     }
 
-    // JSONP Handler callback
+    // JSONP Callback
     window.handleSheetData = function(response) {
       const tbody = document.getElementById('table-body');
       if (response && response.table && response.table.rows) {
@@ -209,7 +211,6 @@
           let count = cells[4] ? cells[4].v : 0;
           let tickets = cells[5] ? cells[5].v : '';
 
-          // ข้ามแถวที่เป็นหัวตาราง
           if (!realName || realName.includes('ชื่อ') || realName.includes('Name')) return;
 
           processed.push({
@@ -242,13 +243,12 @@
       script.id = 'gviz-script';
       script.src = GVIZ_URL + '&_' + new Date().getTime();
       script.onerror = function() {
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center p-8 text-rose-500 font-medium">❌ ไม่สามารถดึงข้อมูลได้ โปรดตรวจสอบอินเทอร์เน็ต</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center p-8 text-rose-500 font-medium">❌ ไม่สามารถดึงข้อมูลได้ โปรดตรวจสอบ ID ของ Google Sheets และตั้งค่าการแชร์ให้เป็น "ทุกคนที่มีลิงก์"</td></tr>`;
       };
 
       document.body.appendChild(script);
     }
 
-    // คำนวณยอดสิทธิ์รวมและแสดงผลบนกล่องด้านบน
     function updateTotalRightsDisplay(data) {
       const totalRights = data.reduce((sum, item) => sum + item.count, 0);
       document.getElementById('total-rights-count').innerText = totalRights.toLocaleString();
@@ -345,6 +345,9 @@
     function updateText() {
       if (currentLang === 'en') {
         document.getElementById('app-title').innerText = 'Activity Rights Checking System';
+        document.getElementById('welcome-heading').innerText = 'Activity Rights Checking System';
+        document.getElementById('welcome-sub').innerText = 'Please select a language to proceed';
+        
         document.getElementById('title-months').innerText = 'Select Month';
         document.getElementById('month-july').innerText = 'July';
         document.getElementById('month-aug').innerText = 'August';
@@ -376,6 +379,9 @@
         document.getElementById('btn-modal-close').innerText = 'Close';
       } else {
         document.getElementById('app-title').innerText = 'ระบบตรวจสอบสิทธิ์กิจกรรม';
+        document.getElementById('welcome-heading').innerText = 'ระบบตรวจสอบสิทธิ์กิจกรรม';
+        document.getElementById('welcome-sub').innerText = 'กรุณาเลือกภาษาเพื่อเริ่มต้นใช้งาน';
+
         document.getElementById('title-months').innerText = 'เลือกเดือนที่ต้องการตรวจสอบ';
         document.getElementById('month-july').innerText = 'กรกฎาคม';
         document.getElementById('month-aug').innerText = 'สิงหาคม';
