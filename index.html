@@ -104,6 +104,21 @@
         </div>
       </div>
 
+      <!-- Banner แสดงสิทธิ์รวมทั้งหมดที่จะเอาไปสุ่มรางวัล -->
+      <div class="bg-gradient-to-r from-pink-500 to-rose-500 text-white p-4 md:p-5 rounded-2xl shadow-md mb-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="bg-white/20 p-3 rounded-xl text-2xl">🎁</div>
+          <div>
+            <div class="text-xs text-pink-100 font-medium uppercase tracking-wider" id="total-rights-label">จำนวนสิทธิ์สุ่มรางวัลรวมประจำเดือน</div>
+            <div class="text-lg md:text-xl font-bold" id="total-rights-desc">มีสิทธิ์ที่เข้าร่วมจับรางวัลรวมทั้งหมดในรอบนี้</div>
+          </div>
+        </div>
+        <div class="bg-white text-pink-600 px-5 py-2.5 rounded-xl shadow-inner text-center w-full sm:w-auto">
+          <span class="text-2xl md:text-3xl font-extrabold tracking-tight" id="total-rights-count">0</span>
+          <span class="text-xs font-bold text-slate-600 ml-1" id="total-rights-unit">สิทธิ์</span>
+        </div>
+      </div>
+
       <!-- Notice -->
       <div class="bg-pink-50 border-l-4 border-pink-500 p-3 rounded-r-xl mb-4 text-xs text-pink-900">
         📌 <strong>PDPA Note:</strong> <span id="pdpa-note">ระบบทำการปิดบังชื่อบางส่วน (xxx) เพื่อความปลอดภัยของข้อมูลส่วนบุคคล คุณสามารถพิมพ์ชื่อจริงในช่องค้นหาเพื่อค้นหาข้อมูลได้ทันที</span>
@@ -153,12 +168,10 @@
   </div>
 
   <script>
-    // Google Sheets GViz JSONP URL
-// นำ ID ยาวๆ จาก URL ของ Google Sheets มาใส่ในอัญประกาศ ('...') ตรงนี้
-const SHEET_ID = '1kgpc09vkIvSMRpjjexqy1MikFbHnQib1upHSogIiTu0';
+    // ** อย่าลืมเปลี่ยน SHEET_ID ด้านล่างให้เป็น ID ของคุณ **
+    const SHEET_ID = '12PACX-1vQhjKb_brqHfYoslXHx8NT_rUtqJQAVI5XjozdR3zizF-A4yxsvHFkkdKfbae828026ef0A0nZalahH';
+    const GVIZ_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=responseHandler:handleSheetData`;
 
-// สร้าง URL สำหรับดึงข้อมูลผ่าน GViz JSONP
-const GVIZ_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=responseHandler:handleSheetData`;
     let rawData = [];
     let currentLang = 'th';
 
@@ -211,6 +224,7 @@ const GVIZ_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx
         });
 
         rawData = processed;
+        updateTotalRightsDisplay(rawData);
         renderTable(rawData);
       } else {
         tbody.innerHTML = `<tr><td colspan="6" class="text-center p-8 text-rose-500 font-medium">❌ ไม่พบข้อมูลในตาราง</td></tr>`;
@@ -221,11 +235,9 @@ const GVIZ_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx
       const tbody = document.getElementById('table-body');
       tbody.innerHTML = `<tr><td colspan="6" class="text-center p-8 text-slate-500">⏳ ${currentLang === 'th' ? 'กำลังดึงข้อมูลจาก Google Sheets...' : 'Loading data...'}</td></tr>`;
 
-      // ลบสคริปต์เดิมออกถ้ามี
       const oldScript = document.getElementById('gviz-script');
       if (oldScript) oldScript.remove();
 
-      // สร้าง Tag Script ไดนามิกแบบ JSONP เพื่อข้ามผ่าน CORS
       const script = document.createElement('script');
       script.id = 'gviz-script';
       script.src = GVIZ_URL + '&_' + new Date().getTime();
@@ -234,6 +246,12 @@ const GVIZ_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx
       };
 
       document.body.appendChild(script);
+    }
+
+    // คำนวณยอดสิทธิ์รวมและแสดงผลบนกล่องด้านบน
+    function updateTotalRightsDisplay(data) {
+      const totalRights = data.reduce((sum, item) => sum + item.count, 0);
+      document.getElementById('total-rights-count').innerText = totalRights.toLocaleString();
     }
 
     function setLanguage(lang) {
@@ -345,6 +363,10 @@ const GVIZ_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx
         document.getElementById('search-input').placeholder = 'Type name to search...';
         document.getElementById('pdpa-note').innerText = 'Names are partially hidden (xxx) for privacy under PDPA. You can search by entering full names in the search box.';
         
+        document.getElementById('total-rights-label').innerText = 'Monthly Total Lucky Draw Rights';
+        document.getElementById('total-rights-desc').innerText = 'Total rights submitted for the lucky draw in this round';
+        document.getElementById('total-rights-unit').innerText = 'rights';
+
         document.getElementById('th-rank').innerText = 'Rank';
         document.getElementById('th-name').innerText = 'Full Name';
         document.getElementById('th-status').innerText = 'Status';
@@ -372,6 +394,10 @@ const GVIZ_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx
         document.getElementById('search-input').placeholder = 'พิมพ์ชื่อเพื่อค้นหา...';
         document.getElementById('pdpa-note').innerText = 'ระบบทำการปิดบังชื่อบางส่วน (xxx) เพื่อความปลอดภัยของข้อมูลส่วนบุคคล คุณสามารถพิมพ์ชื่อจริงในช่องค้นหาเพื่อค้นหาข้อมูลได้ทันที';
         
+        document.getElementById('total-rights-label').innerText = 'จำนวนสิทธิ์สุ่มรางวัลรวมประจำเดือน';
+        document.getElementById('total-rights-desc').innerText = 'มีสิทธิ์ที่เข้าร่วมจับรางวัลรวมทั้งหมดในรอบนี้';
+        document.getElementById('total-rights-unit').innerText = 'สิทธิ์';
+
         document.getElementById('th-rank').innerText = 'อันดับ';
         document.getElementById('th-name').innerText = 'ชื่อ-นามสกุล';
         document.getElementById('th-status').innerText = 'สถานะ';
