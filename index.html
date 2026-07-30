@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Econ Steps The Curve - ระบบตรวจสอบสิทธิ์กิจกรรม</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- โหลด Google Charts API -->
-  <script src="https://www.gstatic.com/charts/loader.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
     body { font-family: 'Sarabun', sans-serif; }
@@ -155,12 +153,8 @@
   </div>
 
   <script>
-    google.charts.load('current', {packages: ['corechart']});
-
-    // ID ไฟล์ Google Sheets ของคุณ
-    const SPREADSHEET_ID = '12PACX-1vQhjKb_brqHfYoslXHx8NT_rUtqJQAVI5XjozdR3zizF-A4yxsvHFkkdKfbae828026ef0A0nZalahH';
-    // ลิงก์ตรงแบบ gviz JSONP
-    const GVIZ_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQhjKb_brqHfYoslXHx8NT_rUtqJQAVI5XjozdR3zizF-A4yxsvHFkkdKfbae828026ef0A0nZalahH/gviz/tq?tqx=out:json';
+    // Google Sheets GViz JSONP URL
+    const GVIZ_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQhjKb_brqHfYoslXHx8NT_rUtqJQAVI5XjozdR3zizF-A4yxsvHFkkdKfbae828026ef0A0nZalahH/gviz/tq?tqx=responseHandler:handleSheetData';
 
     let rawData = [];
     let currentLang = 'th';
@@ -181,58 +175,59 @@
       return isNaN(num) ? 0 : num;
     }
 
-    // ดึงข้อมูลผ่าน gviz JSONP (ทะลุ CORS 100%)
+    // JSONP Handler callback
+    window.handleSheetData = function(response) {
+      const tbody = document.getElementById('table-body');
+      if (response && response.table && response.table.rows) {
+        let processed = [];
+        const rows = response.table.rows;
+
+        rows.forEach((r, idx) => {
+          const cells = r.c;
+          if (!cells) return;
+
+          let rank = cells[0] ? (cells[0].v !== null ? cells[0].v : (idx + 1)) : (idx + 1);
+          let realName = cells[1] ? (cells[1].v ? String(cells[1].v).trim() : '') : '';
+          let status = cells[2] ? (cells[2].v ? String(cells[2].v).trim() : 'ทั่วไป') : 'ทั่วไป';
+          let steps = cells[3] ? cells[3].v : 0;
+          let count = cells[4] ? cells[4].v : 0;
+          let tickets = cells[5] ? cells[5].v : '';
+
+          // ข้ามแถวที่เป็นหัวตาราง
+          if (!realName || realName.includes('ชื่อ') || realName.includes('Name')) return;
+
+          processed.push({
+            rank: parseInt(rank) || (processed.length + 1),
+            realName: realName,
+            maskedName: maskName(realName),
+            status: status,
+            steps: parseNum(steps),
+            count: parseNum(count),
+            tickets: tickets ? String(tickets).trim() : ''
+          });
+        });
+
+        rawData = processed;
+        renderTable(rawData);
+      } else {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center p-8 text-rose-500 font-medium">❌ ไม่พบข้อมูลในตาราง</td></tr>`;
+      }
+    };
+
     function fetchSheetData() {
       const tbody = document.getElementById('table-body');
       tbody.innerHTML = `<tr><td colspan="6" class="text-center p-8 text-slate-500">⏳ ${currentLang === 'th' ? 'กำลังดึงข้อมูลจาก Google Sheets...' : 'Loading data...'}</td></tr>`;
 
+      // ลบสคริปต์เดิมออกถ้ามี
+      const oldScript = document.getElementById('gviz-script');
+      if (oldScript) oldScript.remove();
+
+      // สร้าง Tag Script ไดนามิกแบบ JSONP เพื่อข้ามผ่าน CORS
       const script = document.createElement('script');
-      
-      // Callback เพื่อรับข้อมูล JSONP จาก Google โดยตรง
-      window.google = window.google || {};
-      window.google.visualization = window.google.visualization || {};
-      window.google.visualization.Query = window.google.visualization.Query || {};
-      
-      window.google.visualization.Query.setResponse = function(response) {
-        if (response && response.table && response.table.rows) {
-          let processed = [];
-          const rows = response.table.rows;
-
-          rows.forEach((r, idx) => {
-            const cells = r.c;
-            if (!cells) return;
-
-            let rank = cells[0] ? cells[0].v : (idx + 1);
-            let realName = cells[1] ? String(cells[1].v).trim() : '';
-            let status = cells[2] ? String(cells[2].v).trim() : 'ทั่วไป';
-            let steps = cells[3] ? cells[3].v : 0;
-            let count = cells[4] ? cells[4].v : 0;
-            let tickets = cells[5] ? cells[5].v : '';
-
-            // ข้ามหัวตาราง
-            if (realName === '' || realName.includes('ชื่อ') || realName.includes('Name')) return;
-
-            processed.push({
-              rank: parseInt(rank) || (processed.length + 1),
-              realName: realName,
-              maskedName: maskName(realName),
-              status: status,
-              steps: parseNum(steps),
-              count: parseNum(count),
-              tickets: String(tickets).trim()
-            });
-          });
-
-          rawData = processed;
-          renderTable(rawData);
-        } else {
-          tbody.innerHTML = `<tr><td colspan="6" class="text-center p-8 text-rose-500 font-medium">❌ รูปแบบข้อมูลใน Google Sheets ไม่ถูกต้อง</td></tr>`;
-        }
-      };
-
-      script.src = GVIZ_URL;
+      script.id = 'gviz-script';
+      script.src = GVIZ_URL + '&_' + new Date().getTime();
       script.onerror = function() {
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center p-8 text-rose-500 font-medium">❌ ไม่สามารถดึงข้อมูลได้ โปรดลองเปิดผ่าน Web Server หรือใช้วิธี GitHub Pages</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center p-8 text-rose-500 font-medium">❌ ไม่สามารถดึงข้อมูลได้ โปรดตรวจสอบอินเทอร์เน็ต</td></tr>`;
       };
 
       document.body.appendChild(script);
