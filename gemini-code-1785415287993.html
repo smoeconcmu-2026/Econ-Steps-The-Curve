@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Econ Steps The Curve - ระบบตรวจสอบสิทธิ์กิจกรรม</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- โหลด Google Charts API -->
+  <script src="https://www.gstatic.com/charts/loader.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Sarabun', sans-serif; }
+  </style>
+</head>
+<body class="bg-pink-50/40 text-slate-800 min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="bg-pink-600 text-white shadow-md p-4">
+    <div class="max-w-6xl mx-auto flex justify-between items-center">
+      <div>
+        <span class="text-xs font-semibold uppercase tracking-wider text-pink-200 block">Econ Steps The Curve</span>
+        <h1 class="text-xl font-bold tracking-wide" id="app-title">ระบบตรวจสอบสิทธิ์กิจกรรม</h1>
+      </div>
+      <button onclick="toggleLanguage()" id="lang-toggle-btn" class="text-xs bg-pink-700 hover:bg-pink-800 px-3.5 py-2 rounded-full transition shadow-sm border border-pink-500">
+        🌐 เปลี่ยนภาษา / Language
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="flex-1 max-w-6xl w-full mx-auto p-4 md:p-6">
+
+    <!-- PAGE 1: Language Selection -->
+    <section id="page-lang" class="flex flex-col items-center justify-center min-h-[60vh] text-center">
+      <span class="bg-pink-100 text-pink-600 text-sm font-semibold px-4 py-1.5 rounded-full mb-3">Econ Steps The Curve</span>
+      <h2 class="text-2xl md:text-3xl font-bold text-slate-800 mb-2">ยินดีต้อนรับ / Welcome</h2>
+      <p class="text-slate-500 mb-8">กรุณาเลือกภาษาเพื่อเริ่มต้นใช้งาน / Please select a language</p>
+      <div class="flex flex-col sm:flex-row gap-4 w-full max-w-xs sm:max-w-md">
+        <button onclick="setLanguage('th')" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-semibold py-4 px-6 rounded-2xl shadow-lg hover:shadow-xl transition flex items-center justify-center gap-2 text-lg">
+          🇹🇭 ภาษาไทย
+        </button>
+        <button onclick="setLanguage('en')" class="w-full bg-white hover:bg-pink-50 text-pink-600 border-2 border-pink-600 font-semibold py-4 px-6 rounded-2xl shadow-lg hover:shadow-xl transition flex items-center justify-center gap-2 text-lg">
+          🇬🇧 English
+        </button>
+      </div>
+    </section>
+
+    <!-- PAGE 2: Month Selection -->
+    <section id="page-months" class="hidden">
+      <div class="mb-6">
+        <span class="text-pink-600 font-semibold text-sm">Econ Steps The Curve</span>
+        <h2 id="title-months" class="text-2xl font-bold text-slate-800">เลือกเดือนที่ต้องการตรวจสอบ</h2>
+      </div>
+      
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- July (Active) -->
+        <button onclick="goToPage('table')" class="bg-white p-6 rounded-2xl shadow-md border-2 border-pink-500 hover:border-pink-600 hover:shadow-lg transition text-left flex flex-col justify-between h-40 group">
+          <div>
+            <span class="bg-pink-100 text-pink-700 text-xs px-2.5 py-1 rounded-full font-semibold" id="badge-july">พร้อมตรวจสอบ</span>
+            <h3 class="text-xl font-bold text-slate-800 mt-3 group-hover:text-pink-600 transition" id="month-july">กรกฎาคม</h3>
+          </div>
+          <span class="text-pink-600 text-sm font-semibold flex items-center gap-1" id="btn-view-july">เข้าดูประกาศรายชื่อ &rarr;</span>
+        </button>
+
+        <!-- Aug, Sep, Oct (Disabled) -->
+        <div class="bg-slate-100/80 p-6 rounded-2xl border border-slate-200 opacity-60 flex flex-col justify-between h-40">
+          <div>
+            <span class="bg-slate-200 text-slate-600 text-xs px-2.5 py-1 rounded-full font-semibold" id="badge-soon1">เร็วๆ นี้</span>
+            <h3 class="text-xl font-bold text-slate-500 mt-3" id="month-aug">สิงหาคม</h3>
+          </div>
+          <span class="text-slate-400 text-sm" id="desc-soon1">ยังไม่เปิดให้ตรวจสอบ</span>
+        </div>
+
+        <div class="bg-slate-100/80 p-6 rounded-2xl border border-slate-200 opacity-60 flex flex-col justify-between h-40">
+          <div>
+            <span class="bg-slate-200 text-slate-600 text-xs px-2.5 py-1 rounded-full font-semibold" id="badge-soon2">เร็วๆ นี้</span>
+            <h3 class="text-xl font-bold text-slate-500 mt-3" id="month-sep">กันยายน</h3>
+          </div>
+          <span class="text-slate-400 text-sm" id="desc-soon2">ยังไม่เปิดให้ตรวจสอบ</span>
+        </div>
+
+        <div class="bg-slate-100/80 p-6 rounded-2xl border border-slate-200 opacity-60 flex flex-col justify-between h-40">
+          <div>
+            <span class="bg-slate-200 text-slate-600 text-xs px-2.5 py-1 rounded-full font-semibold" id="badge-soon3">เร็วๆ นี้</span>
+            <h3 class="text-xl font-bold text-slate-500 mt-3" id="month-oct">ตุลาคม</h3>
+          </div>
+          <span class="text-slate-400 text-sm" id="desc-soon3">ยังไม่เปิดให้ตรวจสอบ</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE 3: Table Display -->
+    <section id="page-table" class="hidden">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div>
+          <button onclick="goToPage('months')" class="text-pink-600 hover:underline text-sm mb-1 inline-block">&larr; <span id="back-to-months">กลับไปหน้าเลือกเดือน</span></button>
+          <div class="flex items-center gap-2">
+            <span class="bg-pink-100 text-pink-700 text-xs font-semibold px-2.5 py-0.5 rounded-full">Econ Steps The Curve</span>
+            <h2 class="text-2xl font-bold text-slate-800" id="table-title">ประกาศรายชื่อ - กรกฎาคม</h2>
+          </div>
+        </div>
+        
+        <!-- Search Input -->
+        <div class="w-full sm:w-72">
+          <input type="text" id="search-input" oninput="handleSearch()" placeholder="พิมพ์ชื่อเพื่อค้นหา..." class="w-full px-4 py-2.5 rounded-xl border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-500 shadow-sm text-sm">
+        </div>
+      </div>
+
+      <!-- Notice -->
+      <div class="bg-pink-50 border-l-4 border-pink-500 p-3 rounded-r-xl mb-4 text-xs text-pink-900">
+        📌 <strong>PDPA Note:</strong> <span id="pdpa-note">ระบบทำการปิดบังชื่อบางส่วน (xxx) เพื่อความปลอดภัยของข้อมูลส่วนบุคคล คุณสามารถพิมพ์ชื่อจริงในช่องค้นหาเพื่อค้นหาข้อมูลได้ทันที</span>
+      </div>
+
+      <!-- Table Container -->
+      <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-pink-100">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-pink-50/70 text-pink-900 text-xs uppercase tracking-wider border-b border-pink-100">
+                <th class="p-4 text-center" id="th-rank">อันดับ</th>
+                <th class="p-4" id="th-name">ชื่อ-นามสกุล</th>
+                <th class="p-4" id="th-status">สถานะ</th>
+                <th class="p-4 text-right" id="th-steps">จำนวนก้าว</th>
+                <th class="p-4 text-center" id="th-count">จำนวนสิทธิ์</th>
+                <th class="p-4 text-center" id="th-action">เลขสิทธิ์</th>
+              </tr>
+            </thead>
+            <tbody id="table-body" class="divide-y divide-slate-100 text-sm">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal for Tickets -->
+  <div id="ticket-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl flex flex-col max-h-[80vh]">
+      <div class="flex justify-between items-center mb-4">
+        <div>
+          <h3 class="text-lg font-bold text-slate-800" id="modal-user-name">รายการเลขสิทธิ์</h3>
+          <p class="text-xs text-slate-500" id="modal-user-info"></p>
+        </div>
+        <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 text-xl font-bold">&times;</button>
+      </div>
+      <div id="modal-tickets-list" class="flex-1 overflow-y-auto bg-pink-50/50 p-4 rounded-xl font-mono text-xs text-slate-700 flex flex-wrap gap-2">
+        <!-- Rendered via JS -->
+      </div>
+      <button onclick="closeModal()" id="btn-modal-close" class="mt-4 w-full bg-pink-600 text-white font-semibold py-2.5 rounded-xl hover:bg-pink-700 transition shadow-md">
+        ปิดหน้าต่าง
+      </button>
+    </div>
+  </div>
+
+  <script>
+    google.charts.load('current', {packages: ['corechart']});
+
+    // ID ไฟล์ Google Sheets ของคุณ
+    const SPREADSHEET_ID = '12PACX-1vQhjKb_brqHfYoslXHx8NT_rUtqJQAVI5XjozdR3zizF-A4yxsvHFkkdKfbae828026ef0A0nZalahH';
+    // ลิงก์ตรงแบบ gviz JSONP
+    const GVIZ_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQhjKb_brqHfYoslXHx8NT_rUtqJQAVI5XjozdR3zizF-A4yxsvHFkkdKfbae828026ef0A0nZalahH/gviz/tq?tqx=out:json';
+
+    let rawData = [];
+    let currentLang = 'th';
+
+    function maskName(name) {
+      if (!name || name === 'ไม่ระบุ') return 'ไม่ระบุ';
+      const parts = String(name).trim().split(/\s+/);
+      return parts.map(part => {
+        if (part.length <= 2) return part + 'xxx';
+        return part.substring(0, 2) + 'xxx';
+      }).join(' ');
+    }
+
+    function parseNum(val) {
+      if (val === null || val === undefined) return 0;
+      const cleanVal = String(val).replace(/,/g, '').trim();
+      const num = parseFloat(cleanVal);
+      return isNaN(num) ? 0 : num;
+    }
+
+    // ดึงข้อมูลผ่าน gviz JSONP (ทะลุ CORS 100%)
+    function fetchSheetData() {
+      const tbody = document.getElementById('table-body');
+      tbody.innerHTML = `<tr><td colspan="6" class="text-center p-8 text-slate-500">⏳ ${currentLang === 'th' ? 'กำลังดึงข้อมูลจาก Google Sheets...' : 'Loading data...'}</td></tr>`;
+
+      const script = document.createElement('script');
+      
+      // Callback เพื่อรับข้อมูล JSONP จาก Google โดยตรง
+      window.google = window.google || {};
+      window.google.visualization = window.google.visualization || {};
+      window.google.visualization.Query = window.google.visualization.Query || {};
+      
+      window.google.visualization.Query.setResponse = function(response) {
+        if (response && response.table && response.table.rows) {
+          let processed = [];
+          const rows = response.table.rows;
+
+          rows.forEach((r, idx) => {
+            const cells = r.c;
+            if (!cells) return;
+
+            let rank = cells[0] ? cells[0].v : (idx + 1);
+            let realName = cells[1] ? String(cells[1].v).trim() : '';
+            let status = cells[2] ? String(cells[2].v).trim() : 'ทั่วไป';
+            let steps = cells[3] ? cells[3].v : 0;
+            let count = cells[4] ? cells[4].v : 0;
+            let tickets = cells[5] ? cells[5].v : '';
+
+            // ข้ามหัวตาราง
+            if (realName === '' || realName.includes('ชื่อ') || realName.includes('Name')) return;
+
+            processed.push({
+              rank: parseInt(rank) || (processed.length + 1),
+              realName: realName,
+              maskedName: maskName(realName),
+              status: status,
+              steps: parseNum(steps),
+              count: parseNum(count),
+              tickets: String(tickets).trim()
+            });
+          });
+
+          rawData = processed;
+          renderTable(rawData);
+        } else {
+          tbody.innerHTML = `<tr><td colspan="6" class="text-center p-8 text-rose-500 font-medium">❌ รูปแบบข้อมูลใน Google Sheets ไม่ถูกต้อง</td></tr>`;
+        }
+      };
+
+      script.src = GVIZ_URL;
+      script.onerror = function() {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center p-8 text-rose-500 font-medium">❌ ไม่สามารถดึงข้อมูลได้ โปรดลองเปิดผ่าน Web Server หรือใช้วิธี GitHub Pages</td></tr>`;
+      };
+
+      document.body.appendChild(script);
+    }
+
+    function setLanguage(lang) {
+      currentLang = lang;
+      updateText();
+      goToPage('months');
+    }
+
+    function toggleLanguage() {
+      currentLang = currentLang === 'th' ? 'en' : 'th';
+      updateText();
+      if (!document.getElementById('page-table').classList.contains('hidden')) {
+        renderTable(rawData);
+      }
+    }
+
+    function goToPage(pageId) {
+      document.getElementById('page-lang').classList.add('hidden');
+      document.getElementById('page-months').classList.add('hidden');
+      document.getElementById('page-table').classList.add('hidden');
+      document.getElementById(`page-${pageId}`).classList.remove('hidden');
+
+      if (pageId === 'table') {
+        if (rawData.length === 0) {
+          fetchSheetData();
+        } else {
+          renderTable(rawData);
+        }
+      }
+    }
+
+    function renderTable(data) {
+      const tbody = document.getElementById('table-body');
+      tbody.innerHTML = '';
+
+      if (data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center p-8 text-slate-400">${currentLang === 'th' ? 'ไม่พบข้อมูลที่ค้นหา' : 'No matching data found'}</td></tr>`;
+        return;
+      }
+
+      data.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-pink-50/50 transition';
+        tr.innerHTML = `
+          <td class="p-4 text-center font-bold text-slate-400">#${item.rank}</td>
+          <td class="p-4 font-semibold text-slate-800">${item.maskedName}</td>
+          <td class="p-4"><span class="bg-pink-50 text-pink-700 border border-pink-200 px-2.5 py-1 rounded-md text-xs font-medium">${item.status}</span></td>
+          <td class="p-4 text-right font-semibold text-slate-700">${item.steps.toLocaleString()}</td>
+          <td class="p-4 text-center font-bold text-pink-600">${item.count.toLocaleString()}</td>
+          <td class="p-4 text-center">
+            <button onclick="openModal(${item.rank})" class="bg-pink-50 hover:bg-pink-100 text-pink-700 font-semibold text-xs px-3 py-1.5 rounded-lg border border-pink-200 transition shadow-sm">
+              🎟️ ${currentLang === 'th' ? 'ดูเลขสิทธิ์' : 'View Rights'}
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function handleSearch() {
+      const query = document.getElementById('search-input').value.trim().toLowerCase();
+      const filtered = rawData.filter(item => 
+        item.realName.toLowerCase().includes(query) || 
+        item.maskedName.toLowerCase().includes(query)
+      );
+      renderTable(filtered);
+    }
+
+    function openModal(rank) {
+      const item = rawData.find(d => d.rank === rank);
+      if (!item) return;
+
+      document.getElementById('modal-user-name').innerText = (currentLang === 'th' ? 'เลขสิทธิ์ของ: ' : 'Rights for: ') + item.maskedName;
+      document.getElementById('modal-user-info').innerText = (currentLang === 'th' ? 'อันดับ #' : 'Rank #') + `${item.rank} | ` + (currentLang === 'th' ? 'จำนวนสิทธิ์ทั้งหมด: ' : 'Total Rights: ') + `${item.count.toLocaleString()}`;
+
+      if (!item.tickets) {
+        document.getElementById('modal-tickets-list').innerHTML = `<span class="text-slate-400 p-2">${currentLang === 'th' ? 'ไม่มีข้อมูลเลขสิทธิ์' : 'No rights found'}</span>`;
+      } else {
+        const ticketArray = item.tickets.split(/[,;\n]/).map(t => t.trim()).filter(t => t !== '');
+        const list = ticketArray.map(t => `<span class="bg-white border border-pink-200 px-2.5 py-1 rounded shadow-sm hover:border-pink-400 text-pink-900 font-semibold">${t}</span>`).join('');
+        document.getElementById('modal-tickets-list').innerHTML = list;
+      }
+
+      document.getElementById('ticket-modal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('ticket-modal').classList.add('hidden');
+    }
+
+    function updateText() {
+      if (currentLang === 'en') {
+        document.getElementById('app-title').innerText = 'Activity Rights Checking System';
+        document.getElementById('title-months').innerText = 'Select Month';
+        document.getElementById('month-july').innerText = 'July';
+        document.getElementById('month-aug').innerText = 'August';
+        document.getElementById('month-sep').innerText = 'September';
+        document.getElementById('month-oct').innerText = 'October';
+        document.getElementById('badge-july').innerText = 'Available';
+        document.getElementById('badge-soon1').innerText = 'Coming Soon';
+        document.getElementById('badge-soon2').innerText = 'Coming Soon';
+        document.getElementById('badge-soon3').innerText = 'Coming Soon';
+        document.getElementById('desc-soon1').innerText = 'Not available yet';
+        document.getElementById('desc-soon2').innerText = 'Not available yet';
+        document.getElementById('desc-soon3').innerText = 'Not available yet';
+        document.getElementById('btn-view-july').innerHTML = 'View List &rarr;';
+        document.getElementById('back-to-months').innerText = 'Back to month selection';
+        document.getElementById('table-title').innerText = 'Announced List - July';
+        document.getElementById('search-input').placeholder = 'Type name to search...';
+        document.getElementById('pdpa-note').innerText = 'Names are partially hidden (xxx) for privacy under PDPA. You can search by entering full names in the search box.';
+        
+        document.getElementById('th-rank').innerText = 'Rank';
+        document.getElementById('th-name').innerText = 'Full Name';
+        document.getElementById('th-status').innerText = 'Status';
+        document.getElementById('th-steps').innerText = 'Step Count';
+        document.getElementById('th-count').innerText = 'Total Rights';
+        document.getElementById('th-action').innerText = 'Right Numbers';
+        document.getElementById('btn-modal-close').innerText = 'Close';
+      } else {
+        document.getElementById('app-title').innerText = 'ระบบตรวจสอบสิทธิ์กิจกรรม';
+        document.getElementById('title-months').innerText = 'เลือกเดือนที่ต้องการตรวจสอบ';
+        document.getElementById('month-july').innerText = 'กรกฎาคม';
+        document.getElementById('month-aug').innerText = 'สิงหาคม';
+        document.getElementById('month-sep').innerText = 'กันยายน';
+        document.getElementById('month-oct').innerText = 'ตุลาคม';
+        document.getElementById('badge-july').innerText = 'พร้อมตรวจสอบ';
+        document.getElementById('badge-soon1').innerText = 'เร็วๆ นี้';
+        document.getElementById('badge-soon2').innerText = 'เร็วๆ นี้';
+        document.getElementById('badge-soon3').innerText = 'เร็วๆ นี้';
+        document.getElementById('desc-soon1').innerText = 'ยังไม่เปิดให้ตรวจสอบ';
+        document.getElementById('desc-soon2').innerText = 'ยังไม่เปิดให้ตรวจสอบ';
+        document.getElementById('desc-soon3').innerText = 'ยังไม่เปิดให้ตรวจสอบ';
+        document.getElementById('btn-view-july').innerHTML = 'เข้าดูประกาศรายชื่อ &rarr;';
+        document.getElementById('back-to-months').innerText = 'กลับไปหน้าเลือกเดือน';
+        document.getElementById('table-title').innerText = 'ประกาศรายชื่อ - กรกฎาคม';
+        document.getElementById('search-input').placeholder = 'พิมพ์ชื่อเพื่อค้นหา...';
+        document.getElementById('pdpa-note').innerText = 'ระบบทำการปิดบังชื่อบางส่วน (xxx) เพื่อความปลอดภัยของข้อมูลส่วนบุคคล คุณสามารถพิมพ์ชื่อจริงในช่องค้นหาเพื่อค้นหาข้อมูลได้ทันที';
+        
+        document.getElementById('th-rank').innerText = 'อันดับ';
+        document.getElementById('th-name').innerText = 'ชื่อ-นามสกุล';
+        document.getElementById('th-status').innerText = 'สถานะ';
+        document.getElementById('th-steps').innerText = 'จำนวนก้าว';
+        document.getElementById('th-count').innerText = 'จำนวนสิทธิ์';
+        document.getElementById('th-action').innerText = 'เลขสิทธิ์';
+        document.getElementById('btn-modal-close').innerText = 'ปิดหน้าต่าง';
+      }
+    }
+  </script>
+</body>
+</html>
