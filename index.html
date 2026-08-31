@@ -51,8 +51,8 @@
       </div>
       
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <!-- July (Active) -->
-        <button onclick="goToPage('table')" class="bg-white p-6 rounded-2xl shadow-md border-2 border-pink-500 hover:border-pink-600 hover:shadow-lg transition text-left flex flex-col justify-between h-40 group">
+        <!-- July (Active - Sheet1) -->
+        <button onclick="selectMonth('july')" class="bg-white p-6 rounded-2xl shadow-md border-2 border-pink-500 hover:border-pink-600 hover:shadow-lg transition text-left flex flex-col justify-between h-40 group">
           <div>
             <span class="bg-pink-100 text-pink-700 text-xs px-2.5 py-1 rounded-full font-semibold" id="badge-july">พร้อมตรวจสอบ</span>
             <h3 class="text-xl font-bold text-slate-800 mt-3 group-hover:text-pink-600 transition" id="month-july">กรกฎาคม</h3>
@@ -60,15 +60,16 @@
           <span class="text-pink-600 text-sm font-semibold flex items-center gap-1" id="btn-view-july">เข้าดูประกาศรายชื่อ &rarr;</span>
         </button>
 
-        <!-- Aug, Sep, Oct (Disabled) -->
-        <div class="bg-slate-100/80 p-6 rounded-2xl border border-slate-200 opacity-60 flex flex-col justify-between h-40">
+        <!-- August (Active - Sheet2) -->
+        <button onclick="selectMonth('august')" class="bg-white p-6 rounded-2xl shadow-md border-2 border-pink-500 hover:border-pink-600 hover:shadow-lg transition text-left flex flex-col justify-between h-40 group">
           <div>
-            <span class="bg-slate-200 text-slate-600 text-xs px-2.5 py-1 rounded-full font-semibold" id="badge-soon1">เร็วๆ นี้</span>
-            <h3 class="text-xl font-bold text-slate-500 mt-3" id="month-aug">สิงหาคม</h3>
+            <span class="bg-pink-100 text-pink-700 text-xs px-2.5 py-1 rounded-full font-semibold" id="badge-aug">พร้อมตรวจสอบ</span>
+            <h3 class="text-xl font-bold text-slate-800 mt-3 group-hover:text-pink-600 transition" id="month-aug">สิงหาคม</h3>
           </div>
-          <span class="text-slate-400 text-sm" id="desc-soon1">ยังไม่เปิดให้ตรวจสอบ</span>
-        </div>
+          <span class="text-pink-600 text-sm font-semibold flex items-center gap-1" id="btn-view-aug">เข้าดูประกาศรายชื่อ &rarr;</span>
+        </button>
 
+        <!-- Sep, Oct (Disabled) -->
         <div class="bg-slate-100/80 p-6 rounded-2xl border border-slate-200 opacity-60 flex flex-col justify-between h-40">
           <div>
             <span class="bg-slate-200 text-slate-600 text-xs px-2.5 py-1 rounded-full font-semibold" id="badge-soon2">เร็วๆ นี้</span>
@@ -94,7 +95,7 @@
           <button onclick="goToPage('months')" class="text-pink-600 hover:underline text-sm mb-1 inline-block">&larr; <span id="back-to-months">กลับไปหน้าเลือกเดือน</span></button>
           <div class="flex items-center gap-2">
             <span class="bg-pink-100 text-pink-700 text-xs font-semibold px-2.5 py-0.5 rounded-full">Econ Steps The Curve</span>
-            <h2 class="text-2xl font-bold text-slate-800" id="table-title">ประกาศรายชื่อ - กรกฎาคม</h2>
+            <h2 class="text-2xl font-bold text-slate-800" id="table-title">ประกาศรายชื่อ</h2>
           </div>
         </div>
         
@@ -168,12 +169,15 @@
   </div>
 
   <script>
-    // ⚠️ นำ ID ของ Google Sheets (ตัวอย่าง: 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms) มาวางในอัญประกาศด้านล่างนี้
     const SHEET_ID = '1kgpc09vkIvSMRpjjexqy1MikFbHnQib1upHSogIiTu0';
     
-    // โครงสร้าง URL สำหรับ GViz API
-    const GVIZ_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=responseHandler:handleSheetData`;
+    // ตั้งค่า Sheet Name สำหรับแต่ละเดือน (ตรงนี้กำหนดชื่อแท็บใน Google Sheets)
+    const MONTH_SHEETS = {
+      july: 'Sheet1',   // หรือปรับเป็น 'กรกฎาคม' หากเปลี่ยนชื่อแท็บ
+      august: 'Sheet2'  // หรือปรับเป็น 'สิงหาคม'
+    };
 
+    let currentMonth = 'july';
     let rawData = [];
     let currentLang = 'th';
 
@@ -236,17 +240,27 @@
       const tbody = document.getElementById('table-body');
       tbody.innerHTML = `<tr><td colspan="6" class="text-center p-8 text-slate-500">⏳ ${currentLang === 'th' ? 'กำลังดึงข้อมูลจาก Google Sheets...' : 'Loading data...'}</td></tr>`;
 
+      const sheetName = MONTH_SHEETS[currentMonth] || 'Sheet1';
+      const gvizUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(sheetName)}&tqx=responseHandler:handleSheetData`;
+
       const oldScript = document.getElementById('gviz-script');
       if (oldScript) oldScript.remove();
 
       const script = document.createElement('script');
       script.id = 'gviz-script';
-      script.src = GVIZ_URL + '&_' + new Date().getTime();
+      script.src = gvizUrl + '&_' + new Date().getTime();
       script.onerror = function() {
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center p-8 text-rose-500 font-medium">❌ ไม่สามารถดึงข้อมูลได้ โปรดตรวจสอบ ID ของ Google Sheets และตั้งค่าการแชร์ให้เป็น "ทุกคนที่มีลิงก์"</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center p-8 text-rose-500 font-medium">❌ ไม่สามารถดึงข้อมูลได้ โปรดตรวจสอบชื่อแท็บใน Google Sheet ให้ตรงกับ "${sheetName}" และตั้งค่าเปิดการแชร์แล้ว</td></tr>`;
       };
 
       document.body.appendChild(script);
+    }
+
+    function selectMonth(monthKey) {
+      currentMonth = monthKey;
+      rawData = []; // ล้างข้อมูลเก่าก่อนโหลดใหม่
+      updateText();
+      goToPage('table');
     }
 
     function updateTotalRightsDisplay(data) {
@@ -275,11 +289,7 @@
       document.getElementById(`page-${pageId}`).classList.remove('hidden');
 
       if (pageId === 'table') {
-        if (rawData.length === 0) {
-          fetchSheetData();
-        } else {
-          renderTable(rawData);
-        }
+        fetchSheetData();
       }
     }
 
@@ -343,6 +353,9 @@
     }
 
     function updateText() {
+      const monthNamesTH = { july: 'กรกฎาคม', august: 'สิงหาคม' };
+      const monthNamesEN = { july: 'July', august: 'August' };
+
       if (currentLang === 'en') {
         document.getElementById('app-title').innerText = 'Activity Rights Checking System';
         document.getElementById('welcome-heading').innerText = 'Activity Rights Checking System';
@@ -354,15 +367,15 @@
         document.getElementById('month-sep').innerText = 'September';
         document.getElementById('month-oct').innerText = 'October';
         document.getElementById('badge-july').innerText = 'Available';
-        document.getElementById('badge-soon1').innerText = 'Coming Soon';
+        document.getElementById('badge-aug').innerText = 'Available';
         document.getElementById('badge-soon2').innerText = 'Coming Soon';
         document.getElementById('badge-soon3').innerText = 'Coming Soon';
-        document.getElementById('desc-soon1').innerText = 'Not available yet';
         document.getElementById('desc-soon2').innerText = 'Not available yet';
         document.getElementById('desc-soon3').innerText = 'Not available yet';
         document.getElementById('btn-view-july').innerHTML = 'View List &rarr;';
+        document.getElementById('btn-view-aug').innerHTML = 'View List &rarr;';
         document.getElementById('back-to-months').innerText = 'Back to month selection';
-        document.getElementById('table-title').innerText = 'Announced List - July';
+        document.getElementById('table-title').innerText = `Announced List - ${monthNamesEN[currentMonth] || ''}`;
         document.getElementById('search-input').placeholder = 'Type name to search...';
         document.getElementById('pdpa-note').innerText = 'Names are partially hidden (xxx) for privacy under PDPA. You can search by entering full names in the search box.';
         
@@ -388,15 +401,15 @@
         document.getElementById('month-sep').innerText = 'กันยายน';
         document.getElementById('month-oct').innerText = 'ตุลาคม';
         document.getElementById('badge-july').innerText = 'พร้อมตรวจสอบ';
-        document.getElementById('badge-soon1').innerText = 'เร็วๆ นี้';
+        document.getElementById('badge-aug').innerText = 'พร้อมตรวจสอบ';
         document.getElementById('badge-soon2').innerText = 'เร็วๆ นี้';
         document.getElementById('badge-soon3').innerText = 'เร็วๆ นี้';
-        document.getElementById('desc-soon1').innerText = 'ยังไม่เปิดให้ตรวจสอบ';
         document.getElementById('desc-soon2').innerText = 'ยังไม่เปิดให้ตรวจสอบ';
         document.getElementById('desc-soon3').innerText = 'ยังไม่เปิดให้ตรวจสอบ';
         document.getElementById('btn-view-july').innerHTML = 'เข้าดูประกาศรายชื่อ &rarr;';
+        document.getElementById('btn-view-aug').innerHTML = 'เข้าดูประกาศรายชื่อ &rarr;';
         document.getElementById('back-to-months').innerText = 'กลับไปหน้าเลือกเดือน';
-        document.getElementById('table-title').innerText = 'ประกาศรายชื่อ - กรกฎาคม';
+        document.getElementById('table-title').innerText = `ประกาศรายชื่อ - ${monthNamesTH[currentMonth] || ''}`;
         document.getElementById('search-input').placeholder = 'พิมพ์ชื่อเพื่อค้นหา...';
         document.getElementById('pdpa-note').innerText = 'ระบบทำการปิดบังชื่อบางส่วน (xxx) เพื่อความปลอดภัยของข้อมูลส่วนบุคคล คุณสามารถพิมพ์ชื่อจริงในช่องค้นหาเพื่อค้นหาข้อมูลได้ทันที';
         
