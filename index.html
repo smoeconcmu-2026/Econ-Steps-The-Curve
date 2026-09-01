@@ -120,9 +120,10 @@
         </div>
       </div>
 
-      <!-- Notice (อัปเดตแจ้งเรื่องการค้นหาด้วยอีเมลแล้ว) -->
-      <div class="bg-pink-50 border-l-4 border-pink-500 p-3.5 rounded-r-xl mb-4 text-xs text-pink-900 leading-relaxed shadow-sm">
-        📌 <strong>คำแนะนำในการค้นหา & PDPA Note:</strong> <span id="pdpa-note">ระบบทำการปิดบังข้อมูลบางส่วน (xxx) เพื่อความเป็นส่วนตัว คุณสามารถพิมพ์ค้นหาด้วย **ชื่อ-นามสกุล** ในช่องค้นหาได้ทันที หากค้นหาชื่อไม่เจอ แนะนำให้ลองพิมพ์ค้นหาด้วย **อีเมลมหาวิทยาลัย** ของคุณ</span>
+      <!-- Notice (ปรับปรุงการแยกหัวข้อ) -->
+      <div class="bg-pink-50 border-l-4 border-pink-500 p-3.5 rounded-r-xl mb-4 text-xs text-pink-900 leading-relaxed shadow-sm space-y-1">
+        <div>📌 <strong>คำแนะนำในการค้นหา:</strong> <span id="search-note">สามารถค้นหาด้วย ชื่อ-นามสกุล ในช่องค้นหาได้ หากไม่พบข้อมูล แนะนำให้ลองค้นหาด้วย อีเมลมหาวิทยาลัย</span></div>
+        <div>📌 <strong>PDPA Note:</strong> <span id="pdpa-note">ระบบมีการปกปิดข้อมูลส่วนบุคคลบางส่วนด้วย XXX เพื่อรักษาความเป็นส่วนตัวและความปลอดภัยของข้อมูล</span></div>
       </div>
 
       <!-- Table Container -->
@@ -408,7 +409,8 @@
         document.getElementById('back-to-months').innerText = 'Back to month selection';
         document.getElementById('table-title').innerText = `Announced List - ${monthNamesEN[currentMonth] || ''}`;
         document.getElementById('search-input').placeholder = 'Type name or email to search...';
-        document.getElementById('pdpa-note').innerText = 'Names/Emails are partially hidden (xxx) for privacy under PDPA. If you cannot find your name, try searching with your university email.';
+        document.getElementById('search-note').innerText = 'You can search by Full Name. If not found, try searching with your University Email.';
+        document.getElementById('pdpa-note').innerText = 'Some personal data is partially masked with XXX to maintain privacy and data security.';     
         
         document.getElementById('total-rights-label').innerText = 'Monthly Total Lucky Draw Rights';
         document.getElementById('total-rights-desc').innerText = 'Total rights submitted for the lucky draw in this round';
@@ -442,7 +444,8 @@
         document.getElementById('back-to-months').innerText = 'กลับไปหน้าเลือกเดือน';
         document.getElementById('table-title').innerText = `ประกาศรายชื่อ - ${monthNamesTH[currentMonth] || ''}`;
         document.getElementById('search-input').placeholder = 'พิมพ์ชื่อ หรือ อีเมล เพื่อค้นหา...';
-        document.getElementById('pdpa-note').innerText = 'ระบบทำการปิดบังข้อมูลบางส่วน (xxx) เพื่อความเป็นส่วนตัว คุณสามารถพิมพ์ค้นหาด้วย ชื่อ-นามสกุล ในช่องค้นหาได้ทันที หากค้นหาชื่อไม่เจอ แนะนำให้ลองพิมพ์ค้นหาด้วย อีเมลมหาวิทยาลัย ของคุณ';
+        document.getElementById('search-note').innerText = 'สามารถค้นหาด้วย ชื่อ-นามสกุล ในช่องค้นหาได้ หากไม่พบข้อมูล แนะนำให้ลองค้นหาด้วย อีเมลมหาวิทยาลัย';
+        document.getElementById('pdpa-note').innerText = 'ระบบมีการปกปิดข้อมูลส่วนบุคคลบางส่วนด้วย XXX เพื่อรักษาความเป็นส่วนตัวและความปลอดภัยของข้อมูล';
         
         document.getElementById('total-rights-label').innerText = 'จำนวนสิทธิ์สุ่มรางวัลรวมประจำเดือน';
         document.getElementById('total-rights-desc').innerText = 'มีสิทธิ์ที่เข้าร่วมจับรางวัลรวมทั้งหมดในรอบนี้';
