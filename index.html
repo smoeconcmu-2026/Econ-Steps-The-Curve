@@ -120,9 +120,9 @@
         </div>
       </div>
 
-      <!-- Notice (ปรับปรุงการแยกหัวข้อ) -->
+      <!-- Notice Box (รองรับการสลับภาษาแบบ 100%) -->
       <div class="bg-pink-50 border-l-4 border-pink-500 p-3.5 rounded-r-xl mb-4 text-xs text-pink-900 leading-relaxed shadow-sm space-y-1">
-        <div>📌 <strong>คำแนะนำในการค้นหา:</strong> <span id="search-note">สามารถค้นหาด้วย ชื่อ-นามสกุล ในช่องค้นหาได้ หากไม่พบข้อมูล แนะนำให้ลองค้นหาด้วย อีเมลมหาวิทยาลัย</span></div>
+        <div>📌 <strong id="label-search-note">คำแนะนำในการค้นหา:</strong> <span id="search-note">สามารถค้นหาด้วย ชื่อ-นามสกุล ในช่องค้นหาได้ หากไม่พบข้อมูล แนะนำให้ลองค้นหาด้วย อีเมลมหาวิทยาลัย</span></div>
         <div>📌 <strong>PDPA Note:</strong> <span id="pdpa-note">ระบบมีการปกปิดข้อมูลส่วนบุคคลบางส่วนด้วย XXX เพื่อรักษาความเป็นส่วนตัวและความปลอดภัยของข้อมูล</span></div>
       </div>
 
@@ -185,12 +185,10 @@
       if (!name || name === 'ไม่ระบุ') return 'ไม่ระบุ';
       let cleanName = String(name).trim();
 
-      // ตัดส่วนโดเมนอีเมลออก (ถ้ามี) เช่น @cmu.ac.th
       if (cleanName.includes('@')) {
         cleanName = cleanName.split('@')[0];
       }
 
-      // กรณีที่ 1: เป็นตัวเลขล้วน (เช่น รหัสนักศึกษา 691610105)
       if (/^\d+$/.test(cleanName)) {
         if (cleanName.length <= 6) return cleanName; 
         const start = cleanName.substring(0, 3);
@@ -198,7 +196,6 @@
         return `${start}xxxx${end}`;
       }
 
-      // กรณีที่ 2: มีเครื่องหมาย Underscore (_) เช่น cheunkamol_s หรือ cheunkamol_saisalung
       if (cleanName.includes('_')) {
         const parts = cleanName.split('_');
         const firstPart = parts[0];
@@ -214,7 +211,6 @@
         return `${maskedFirst}_${maskedSecond}`;
       }
 
-      // กรณีที่ 3: ชื่อ-นามสกุลปกติ หรือข้อความทั่วไป
       const parts = cleanName.split(/\s+/);
       return parts.map(part => {
         if (part.length <= 2) return part + 'xxx';
@@ -409,8 +405,11 @@
         document.getElementById('back-to-months').innerText = 'Back to month selection';
         document.getElementById('table-title').innerText = `Announced List - ${monthNamesEN[currentMonth] || ''}`;
         document.getElementById('search-input').placeholder = 'Type name or email to search...';
+        
+        // อัปเดตภาษาอังกฤษตรงคำแนะนำค้นหา & PDPA
+        document.getElementById('label-search-note').innerText = 'Search Tip:';
         document.getElementById('search-note').innerText = 'You can search by Full Name. If not found, try searching with your University Email.';
-        document.getElementById('pdpa-note').innerText = 'Some personal data is partially masked with XXX to maintain privacy and data security.';     
+        document.getElementById('pdpa-note').innerText = 'Some personal data is partially masked with XXX to maintain privacy and data security.';
         
         document.getElementById('total-rights-label').innerText = 'Monthly Total Lucky Draw Rights';
         document.getElementById('total-rights-desc').innerText = 'Total rights submitted for the lucky draw in this round';
@@ -431,8 +430,8 @@
         document.getElementById('title-months').innerText = 'เลือกเดือนที่ต้องการตรวจสอบ';
         document.getElementById('month-july').innerText = 'กรกฎาคม';
         document.getElementById('month-aug').innerText = 'สิงหาคม';
-        document.getElementById('month-sep').innerText = 'เร็วๆ นี้';
-        document.getElementById('month-oct').innerText = 'เร็วๆ นี้';
+        document.getElementById('month-sep').innerText = 'กันยายน';
+        document.getElementById('month-oct').innerText = 'ตุลาคม';
         document.getElementById('badge-july').innerText = 'พร้อมตรวจสอบ';
         document.getElementById('badge-aug').innerText = 'พร้อมตรวจสอบ';
         document.getElementById('badge-soon2').innerText = 'เร็วๆ นี้';
@@ -444,6 +443,9 @@
         document.getElementById('back-to-months').innerText = 'กลับไปหน้าเลือกเดือน';
         document.getElementById('table-title').innerText = `ประกาศรายชื่อ - ${monthNamesTH[currentMonth] || ''}`;
         document.getElementById('search-input').placeholder = 'พิมพ์ชื่อ หรือ อีเมล เพื่อค้นหา...';
+        
+        // อัปเดตภาษาไทยตรงคำแนะนำค้นหา & PDPA
+        document.getElementById('label-search-note').innerText = 'คำแนะนำในการค้นหา:';
         document.getElementById('search-note').innerText = 'สามารถค้นหาด้วย ชื่อ-นามสกุล ในช่องค้นหาได้ หากไม่พบข้อมูล แนะนำให้ลองค้นหาด้วย อีเมลมหาวิทยาลัย';
         document.getElementById('pdpa-note').innerText = 'ระบบมีการปกปิดข้อมูลส่วนบุคคลบางส่วนด้วย XXX เพื่อรักษาความเป็นส่วนตัวและความปลอดภัยของข้อมูล';
         
