@@ -101,7 +101,7 @@
         
         <!-- Search Input -->
         <div class="w-full sm:w-72">
-          <input type="text" id="search-input" oninput="handleSearch()" placeholder="พิมพ์ชื่อเพื่อค้นหา..." class="w-full px-4 py-2.5 rounded-xl border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-500 shadow-sm text-sm">
+          <input type="text" id="search-input" oninput="handleSearch()" placeholder="พิมพ์ชื่อ หรือ อีเมล เพื่อค้นหา..." class="w-full px-4 py-2.5 rounded-xl border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-500 shadow-sm text-sm">
         </div>
       </div>
 
@@ -120,9 +120,9 @@
         </div>
       </div>
 
-      <!-- Notice -->
-      <div class="bg-pink-50 border-l-4 border-pink-500 p-3 rounded-r-xl mb-4 text-xs text-pink-900">
-        📌 <strong>PDPA Note:</strong> <span id="pdpa-note">ระบบทำการปิดบังชื่อบางส่วน (xxx) เพื่อความปลอดภัยของข้อมูลส่วนบุคคล คุณสามารถพิมพ์ชื่อจริงในช่องค้นหาเพื่อค้นหาข้อมูลได้ทันที</span>
+      <!-- Notice (อัปเดตแจ้งเรื่องการค้นหาด้วยอีเมลแล้ว) -->
+      <div class="bg-pink-50 border-l-4 border-pink-500 p-3.5 rounded-r-xl mb-4 text-xs text-pink-900 leading-relaxed shadow-sm">
+        📌 <strong>คำแนะนำในการค้นหา & PDPA Note:</strong> <span id="pdpa-note">ระบบทำการปิดบังข้อมูลบางส่วน (xxx) เพื่อความเป็นส่วนตัว คุณสามารถพิมพ์ค้นหาด้วย **ชื่อ-นามสกุล** ในช่องค้นหาได้ทันที หากค้นหาชื่อไม่เจอ แนะนำให้ลองพิมพ์ค้นหาด้วย **อีเมลมหาวิทยาลัย** ของคุณ</span>
       </div>
 
       <!-- Table Container -->
@@ -132,7 +132,7 @@
             <thead>
               <tr class="bg-pink-50/70 text-pink-900 text-xs uppercase tracking-wider border-b border-pink-100">
                 <th class="p-4 text-center" id="th-rank">อันดับ</th>
-                <th class="p-4" id="th-name">ชื่อ-นามสกุล</th>
+                <th class="p-4" id="th-name">ชื่อ-นามสกุล / อีเมล</th>
                 <th class="p-4" id="th-status">สถานะ</th>
                 <th class="p-4 text-right" id="th-steps">จำนวนก้าว</th>
                 <th class="p-4 text-center" id="th-count">จำนวนสิทธิ์</th>
@@ -171,10 +171,9 @@
   <script>
     const SHEET_ID = '1kgpc09vkIvSMRpjjexqy1MikFbHnQib1upHSogIiTu0';
     
-    // ตั้งค่า Sheet Name สำหรับแต่ละเดือน (ตรงนี้กำหนดชื่อแท็บใน Google Sheets)
     const MONTH_SHEETS = {
-      july: 'Sheet1',   // หรือปรับเป็น 'กรกฎาคม' หากเปลี่ยนชื่อแท็บ
-      august: 'Sheet2'  // หรือปรับเป็น 'สิงหาคม'
+      july: 'Sheet1',   
+      august: 'Sheet2'  
     };
 
     let currentMonth = 'july';
@@ -192,7 +191,7 @@
 
       // กรณีที่ 1: เป็นตัวเลขล้วน (เช่น รหัสนักศึกษา 691610105)
       if (/^\d+$/.test(cleanName)) {
-        if (cleanName.length <= 6) return cleanName; // ถ้าสั้นมากไม่ซ่อน
+        if (cleanName.length <= 6) return cleanName; 
         const start = cleanName.substring(0, 3);
         const end = cleanName.substring(cleanName.length - 3);
         return `${start}xxxx${end}`;
@@ -202,12 +201,10 @@
       if (cleanName.includes('_')) {
         const parts = cleanName.split('_');
         const firstPart = parts[0];
-        const secondPart = parts.slice(1).join('_'); // เผื่อมี _ หลายอัน
+        const secondPart = parts.slice(1).join('_'); 
 
-        // ส่วนหน้า _ (แสดง 3 ตัวแรก + xxx)
         const maskedFirst = firstPart.length <= 3 ? firstPart : firstPart.substring(0, 3) + 'xxx';
 
-        // ส่วนหลัง _ (ถ้าไม่เกิน 3 ตัวแสดงทั้งหมด ถ้าเกินแสดง 3 ตัวแรก + xxx)
         let maskedSecond = '';
         if (secondPart) {
           maskedSecond = secondPart.length <= 3 ? secondPart : secondPart.substring(0, 3) + 'xxx';
@@ -292,7 +289,7 @@
 
     function selectMonth(monthKey) {
       currentMonth = monthKey;
-      rawData = []; // ล้างข้อมูลเก่าก่อนโหลดใหม่
+      rawData = []; 
       updateText();
       goToPage('table');
     }
@@ -332,7 +329,7 @@
       tbody.innerHTML = '';
 
       if (data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center p-8 text-slate-400">${currentLang === 'th' ? 'ไม่พบข้อมูลที่ค้นหา' : 'No matching data found'}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center p-8 text-slate-400">${currentLang === 'th' ? 'ไม่พบข้อมูลที่ค้นหา (ลองค้นหาด้วยอีเมลมหาวิทยาลัย)' : 'No matching data found (Try searching by university email)'}</td></tr>`;
         return;
       }
 
@@ -410,15 +407,15 @@
         document.getElementById('btn-view-aug').innerHTML = 'View List &rarr;';
         document.getElementById('back-to-months').innerText = 'Back to month selection';
         document.getElementById('table-title').innerText = `Announced List - ${monthNamesEN[currentMonth] || ''}`;
-        document.getElementById('search-input').placeholder = 'Type name to search...';
-        document.getElementById('pdpa-note').innerText = 'Names are partially hidden (xxx) for privacy under PDPA. You can search by entering full names in the search box.';
+        document.getElementById('search-input').placeholder = 'Type name or email to search...';
+        document.getElementById('pdpa-note').innerText = 'Names/Emails are partially hidden (xxx) for privacy under PDPA. If you cannot find your name, try searching with your university email.';
         
         document.getElementById('total-rights-label').innerText = 'Monthly Total Lucky Draw Rights';
         document.getElementById('total-rights-desc').innerText = 'Total rights submitted for the lucky draw in this round';
         document.getElementById('total-rights-unit').innerText = 'rights';
 
         document.getElementById('th-rank').innerText = 'Rank';
-        document.getElementById('th-name').innerText = 'Full Name';
+        document.getElementById('th-name').innerText = 'Name / Email';
         document.getElementById('th-status').innerText = 'Status';
         document.getElementById('th-steps').innerText = 'Step Count';
         document.getElementById('th-count').innerText = 'Total Rights';
@@ -432,8 +429,8 @@
         document.getElementById('title-months').innerText = 'เลือกเดือนที่ต้องการตรวจสอบ';
         document.getElementById('month-july').innerText = 'กรกฎาคม';
         document.getElementById('month-aug').innerText = 'สิงหาคม';
-        document.getElementById('month-sep').innerText = 'กันยายน';
-        document.getElementById('month-oct').innerText = 'ตุลาคม';
+        document.getElementById('month-sep').innerText = 'เร็วๆ นี้';
+        document.getElementById('month-oct').innerText = 'เร็วๆ นี้';
         document.getElementById('badge-july').innerText = 'พร้อมตรวจสอบ';
         document.getElementById('badge-aug').innerText = 'พร้อมตรวจสอบ';
         document.getElementById('badge-soon2').innerText = 'เร็วๆ นี้';
@@ -444,15 +441,15 @@
         document.getElementById('btn-view-aug').innerHTML = 'เข้าดูประกาศรายชื่อ &rarr;';
         document.getElementById('back-to-months').innerText = 'กลับไปหน้าเลือกเดือน';
         document.getElementById('table-title').innerText = `ประกาศรายชื่อ - ${monthNamesTH[currentMonth] || ''}`;
-        document.getElementById('search-input').placeholder = 'พิมพ์ชื่อเพื่อค้นหา...';
-        document.getElementById('pdpa-note').innerText = 'ระบบทำการปิดบังชื่อบางส่วน (xxx) เพื่อความปลอดภัยของข้อมูลส่วนบุคคล คุณสามารถพิมพ์ชื่อจริงในช่องค้นหาเพื่อค้นหาข้อมูลได้ทันที';
+        document.getElementById('search-input').placeholder = 'พิมพ์ชื่อ หรือ อีเมล เพื่อค้นหา...';
+        document.getElementById('pdpa-note').innerText = 'ระบบทำการปิดบังข้อมูลบางส่วน (xxx) เพื่อความเป็นส่วนตัว คุณสามารถพิมพ์ค้นหาด้วย ชื่อ-นามสกุล ในช่องค้นหาได้ทันที หากค้นหาชื่อไม่เจอ แนะนำให้ลองพิมพ์ค้นหาด้วย อีเมลมหาวิทยาลัย ของคุณ';
         
         document.getElementById('total-rights-label').innerText = 'จำนวนสิทธิ์สุ่มรางวัลรวมประจำเดือน';
         document.getElementById('total-rights-desc').innerText = 'มีสิทธิ์ที่เข้าร่วมจับรางวัลรวมทั้งหมดในรอบนี้';
         document.getElementById('total-rights-unit').innerText = 'สิทธิ์';
 
         document.getElementById('th-rank').innerText = 'อันดับ';
-        document.getElementById('th-name').innerText = 'ชื่อ-นามสกุล';
+        document.getElementById('th-name').innerText = 'ชื่อ-นามสกุล / อีเมล';
         document.getElementById('th-status').innerText = 'สถานะ';
         document.getElementById('th-steps').innerText = 'จำนวนก้าว';
         document.getElementById('th-count').innerText = 'จำนวนสิทธิ์';
