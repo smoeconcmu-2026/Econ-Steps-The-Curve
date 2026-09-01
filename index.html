@@ -183,7 +183,41 @@
 
     function maskName(name) {
       if (!name || name === 'ไม่ระบุ') return 'ไม่ระบุ';
-      const parts = String(name).trim().split(/\s+/);
+      let cleanName = String(name).trim();
+
+      // ตัดส่วนโดเมนอีเมลออก (ถ้ามี) เช่น @cmu.ac.th
+      if (cleanName.includes('@')) {
+        cleanName = cleanName.split('@')[0];
+      }
+
+      // กรณีที่ 1: เป็นตัวเลขล้วน (เช่น รหัสนักศึกษา 691610105)
+      if (/^\d+$/.test(cleanName)) {
+        if (cleanName.length <= 6) return cleanName; // ถ้าสั้นมากไม่ซ่อน
+        const start = cleanName.substring(0, 3);
+        const end = cleanName.substring(cleanName.length - 3);
+        return `${start}xxxx${end}`;
+      }
+
+      // กรณีที่ 2: มีเครื่องหมาย Underscore (_) เช่น cheunkamol_s หรือ cheunkamol_saisalung
+      if (cleanName.includes('_')) {
+        const parts = cleanName.split('_');
+        const firstPart = parts[0];
+        const secondPart = parts.slice(1).join('_'); // เผื่อมี _ หลายอัน
+
+        // ส่วนหน้า _ (แสดง 3 ตัวแรก + xxx)
+        const maskedFirst = firstPart.length <= 3 ? firstPart : firstPart.substring(0, 3) + 'xxx';
+
+        // ส่วนหลัง _ (ถ้าไม่เกิน 3 ตัวแสดงทั้งหมด ถ้าเกินแสดง 3 ตัวแรก + xxx)
+        let maskedSecond = '';
+        if (secondPart) {
+          maskedSecond = secondPart.length <= 3 ? secondPart : secondPart.substring(0, 3) + 'xxx';
+        }
+
+        return `${maskedFirst}_${maskedSecond}`;
+      }
+
+      // กรณีที่ 3: ชื่อ-นามสกุลปกติ หรือข้อความทั่วไป
+      const parts = cleanName.split(/\s+/);
       return parts.map(part => {
         if (part.length <= 2) return part + 'xxx';
         return part.substring(0, 2) + 'xxx';
