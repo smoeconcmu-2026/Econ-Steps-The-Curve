@@ -69,15 +69,16 @@
           <span class="text-pink-600 text-sm font-semibold flex items-center gap-1" id="btn-view-aug">เข้าดูประกาศรายชื่อ &rarr;</span>
         </button>
 
-        <!-- Sep, Oct (Disabled) -->
-        <div class="bg-slate-100/80 p-6 rounded-2xl border border-slate-200 opacity-60 flex flex-col justify-between h-40">
+        <!-- September (Active - Sheet3) -->
+        <button onclick="selectMonth('september')" class="bg-white p-6 rounded-2xl shadow-md border-2 border-pink-500 hover:border-pink-600 hover:shadow-lg transition text-left flex flex-col justify-between h-40 group">
           <div>
-            <span class="bg-slate-200 text-slate-600 text-xs px-2.5 py-1 rounded-full font-semibold" id="badge-soon2">เร็วๆ นี้</span>
-            <h3 class="text-xl font-bold text-slate-500 mt-3" id="month-sep">กันยายน</h3>
+            <span class="bg-pink-100 text-pink-700 text-xs px-2.5 py-1 rounded-full font-semibold" id="badge-sep">พร้อมตรวจสอบ</span>
+            <h3 class="text-xl font-bold text-slate-800 mt-3 group-hover:text-pink-600 transition" id="month-sep">กันยายน</h3>
           </div>
-          <span class="text-slate-400 text-sm" id="desc-soon2">ยังไม่เปิดให้ตรวจสอบ</span>
-        </div>
+          <span class="text-pink-600 text-sm font-semibold flex items-center gap-1" id="btn-view-sep">เข้าดูประกาศรายชื่อ &rarr;</span>
+        </button>
 
+        <!-- October (Disabled) -->
         <div class="bg-slate-100/80 p-6 rounded-2xl border border-slate-200 opacity-60 flex flex-col justify-between h-40">
           <div>
             <span class="bg-slate-200 text-slate-600 text-xs px-2.5 py-1 rounded-full font-semibold" id="badge-soon3">เร็วๆ นี้</span>
@@ -174,7 +175,8 @@
     
     const MONTH_SHEETS = {
       july: 'Sheet1',   
-      august: 'Sheet2'  
+      august: 'Sheet2',
+      september: 'Sheet3'
     };
 
     let currentMonth = 'july';
@@ -381,8 +383,8 @@
     }
 
     function updateText() {
-      const monthNamesTH = { july: 'กรกฎาคม', august: 'สิงหาคม' };
-      const monthNamesEN = { july: 'July', august: 'August' };
+      const monthNamesTH = { july: 'กรกฎาคม', august: 'สิงหาคม', september: 'กันยายน' };
+      const monthNamesEN = { july: 'July', august: 'August', september: 'September' };
 
       if (currentLang === 'en') {
         document.getElementById('app-title').innerText = 'Activity Rights Checking System';
@@ -396,12 +398,12 @@
         document.getElementById('month-oct').innerText = 'October';
         document.getElementById('badge-july').innerText = 'Available';
         document.getElementById('badge-aug').innerText = 'Available';
-        document.getElementById('badge-soon2').innerText = 'Coming Soon';
+        document.getElementById('badge-sep').innerText = 'Available';
         document.getElementById('badge-soon3').innerText = 'Coming Soon';
-        document.getElementById('desc-soon2').innerText = 'Not available yet';
         document.getElementById('desc-soon3').innerText = 'Not available yet';
         document.getElementById('btn-view-july').innerHTML = 'View List &rarr;';
         document.getElementById('btn-view-aug').innerHTML = 'View List &rarr;';
+        document.getElementById('btn-view-sep').innerHTML = 'View List &rarr;';
         document.getElementById('back-to-months').innerText = 'Back to month selection';
         document.getElementById('table-title').innerText = `Announced List - ${monthNamesEN[currentMonth] || ''}`;
         document.getElementById('search-input').placeholder = 'Type name or email to search...';
@@ -434,12 +436,12 @@
         document.getElementById('month-oct').innerText = 'ตุลาคม';
         document.getElementById('badge-july').innerText = 'พร้อมตรวจสอบ';
         document.getElementById('badge-aug').innerText = 'พร้อมตรวจสอบ';
-        document.getElementById('badge-soon2').innerText = 'เร็วๆ นี้';
+        document.getElementById('badge-sep').innerText = 'พร้อมตรวจสอบ';
         document.getElementById('badge-soon3').innerText = 'เร็วๆ นี้';
-        document.getElementById('desc-soon2').innerText = 'ยังไม่เปิดให้ตรวจสอบ';
         document.getElementById('desc-soon3').innerText = 'ยังไม่เปิดให้ตรวจสอบ';
         document.getElementById('btn-view-july').innerHTML = 'เข้าดูประกาศรายชื่อ &rarr;';
         document.getElementById('btn-view-aug').innerHTML = 'เข้าดูประกาศรายชื่อ &rarr;';
+        document.getElementById('btn-view-sep').innerHTML = 'เข้าดูประกาศรายชื่อ &rarr;';
         document.getElementById('back-to-months').innerText = 'กลับไปหน้าเลือกเดือน';
         document.getElementById('table-title').innerText = `ประกาศรายชื่อ - ${monthNamesTH[currentMonth] || ''}`;
         document.getElementById('search-input').placeholder = 'พิมพ์ชื่อ หรือ อีเมล เพื่อค้นหา...';
