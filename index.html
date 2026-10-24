@@ -121,7 +121,7 @@
         </div>
       </div>
 
-      <!-- Notice Box -->
+      <!-- Notice Box (รองรับการสลับภาษาแบบ 100%) -->
       <div class="bg-pink-50 border-l-4 border-pink-500 p-3.5 rounded-r-xl mb-4 text-xs text-pink-900 leading-relaxed shadow-sm space-y-1">
         <div>📌 <strong id="label-search-note">คำแนะนำในการค้นหา:</strong> <span id="search-note">สามารถค้นหาด้วย ชื่อ-นามสกุล ในช่องค้นหาได้ หากไม่พบข้อมูล แนะนำให้ลองค้นหาด้วย อีเมลมหาวิทยาลัย</span></div>
         <div>📌 <strong>PDPA Note:</strong> <span id="pdpa-note">ระบบมีการปกปิดข้อมูลส่วนบุคคลบางส่วนด้วย XXX เพื่อรักษาความเป็นส่วนตัวและความปลอดภัยของข้อมูล</span></div>
@@ -387,48 +387,82 @@
       const monthNamesTH = { july: 'กรกฎาคม', august: 'สิงหาคม', september: 'กันยายน', october: 'ตุลาคม' };
       const monthNamesEN = { july: 'July', august: 'August', september: 'September', october: 'October' };
 
-      // Helper function ป้องกัน Error หาก Element ไม่มีในหน้า
-      const setText = (id, val) => {
-        const el = document.getElementById(id);
-        if (el) el.innerText = val;
-      };
-      const setHTML = (id, val) => {
-        const el = document.getElementById(id);
-        if (el) el.innerHTML = val;
-      };
-
       if (currentLang === 'en') {
-        setText('app-title', 'Activity Rights Checking System');
-        setText('welcome-heading', 'Activity Rights Checking System');
-        setText('welcome-sub', 'Please select a language to proceed');
+        document.getElementById('app-title').innerText = 'Activity Rights Checking System';
+        document.getElementById('welcome-heading').innerText = 'Activity Rights Checking System';
+        document.getElementById('welcome-sub').innerText = 'Please select a language to proceed';
         
-        setText('title-months', 'Select Month');
-        setText('month-july', 'July');
-        setText('month-aug', 'August');
-        setText('month-sep', 'September');
-        setText('month-oct', 'October');
-        setText('badge-july', 'Available');
-        setText('badge-aug', 'Available');
-        setText('badge-sep', 'Available');
-        setText('badge-oct', 'Available');
-        setHTML('btn-view-july', 'View List &rarr;');
-        setHTML('btn-view-aug', 'View List &rarr;');
-        setHTML('btn-view-sep', 'View List &rarr;');
-        setHTML('btn-view-oct', 'View List &rarr;');
-        setText('back-to-months', 'Back to month selection');
-        setText('table-title', `Announced List - ${monthNamesEN[currentMonth] || ''}`);
+        document.getElementById('title-months').innerText = 'Select Month';
+        document.getElementById('month-july').innerText = 'July';
+        document.getElementById('month-aug').innerText = 'August';
+        document.getElementById('month-sep').innerText = 'September';
+        document.getElementById('month-oct').innerText = 'October';
+        document.getElementById('badge-july').innerText = 'Available';
+        document.getElementById('badge-aug').innerText = 'Available';
+        document.getElementById('badge-sep').innerText = 'Available';
+        document.getElementById('badge-oct').innerText = 'Available';
+        document.getElementById('btn-view-july').innerHTML = 'View List &rarr;';
+        document.getElementById('btn-view-aug').innerHTML = 'View List &rarr;';
+        document.getElementById('btn-view-sep').innerHTML = 'View List &rarr;';
+        document.getElementById('btn-view-oct').innerHTML = 'View List &rarr;';
+        document.getElementById('back-to-months').innerText = 'Back to month selection';
+        document.getElementById('table-title').innerText = `Announced List - ${monthNamesEN[currentMonth] || ''}`;
+        document.getElementById('search-input').placeholder = 'Type name or email to search...';
         
-        const searchInput = document.getElementById('search-input');
-        if (searchInput) searchInput.placeholder = 'Type name or email to search...';
+        document.getElementById('label-search-note').innerText = 'Search Tip:';
+        document.getElementById('search-note').innerText = 'You can search by Full Name. If not found, try searching with your University Email.';
+        document.getElementById('pdpa-note').innerText = 'Some personal data is partially masked with XXX to maintain privacy and data security.';
         
-        setText('label-search-note', 'Search Tip:');
-        setText('search-note', 'You can search by Full Name. If not found, try searching with your University Email.');
-        setText('pdpa-note', 'Some personal data is partially masked with XXX to maintain privacy and data security.');
-        
-        setText('total-rights-label', 'Monthly Total Lucky Draw Rights');
-        setText('total-rights-desc', 'Total rights submitted for the lucky draw in this round');
-        setText('total-rights-unit', 'rights');
+        document.getElementById('total-rights-label').innerText = 'Monthly Total Lucky Draw Rights';
+        document.getElementById('total-rights-desc').innerText = 'Total rights submitted for the lucky draw in this round';
+        document.getElementById('total-rights-unit').innerText = 'rights';
 
-        setText('th-rank', 'Rank');
-        setText('th-name', 'Name / Email');
-        setText
+        document.getElementById('th-rank').innerText = 'Rank';
+        document.getElementById('th-name').innerText = 'Name / Email';
+        document.getElementById('th-status').innerText = 'Status';
+        document.getElementById('th-steps').innerText = 'Step Count';
+        document.getElementById('th-count').innerText = 'Total Rights';
+        document.getElementById('th-action').innerText = 'Right Numbers';
+        document.getElementById('btn-modal-close').innerText = 'Close';
+      } else {
+        document.getElementById('app-title').innerText = 'ระบบตรวจสอบสิทธิ์กิจกรรม';
+        document.getElementById('welcome-heading').innerText = 'ระบบตรวจสอบสิทธิ์กิจกรรม';
+        document.getElementById('welcome-sub').innerText = 'กรุณาเลือกภาษาเพื่อเริ่มต้นใช้งาน';
+
+        document.getElementById('title-months').innerText = 'เลือกเดือนที่ต้องการตรวจสอบ';
+        document.getElementById('month-july').innerText = 'กรกฎาคม';
+        document.getElementById('month-aug').innerText = 'สิงหาคม';
+        document.getElementById('month-sep').innerText = 'กันยายน';
+        document.getElementById('month-oct').innerText = 'ตุลาคม';
+        document.getElementById('badge-july').innerText = 'พร้อมตรวจสอบ';
+        document.getElementById('badge-aug').innerText = 'พร้อมตรวจสอบ';
+        document.getElementById('badge-sep').innerText = 'พร้อมตรวจสอบ';
+        document.getElementById('badge-oct').innerText = 'พร้อมตรวจสอบ';
+        document.getElementById('btn-view-july').innerHTML = 'เข้าดูประกาศรายชื่อ &rarr;';
+        document.getElementById('btn-view-aug').innerHTML = 'เข้าดูประกาศรายชื่อ &rarr;';
+        document.getElementById('btn-view-sep').innerHTML = 'เข้าดูประกาศรายชื่อ &rarr;';
+        document.getElementById('btn-view-oct').innerHTML = 'เข้าดูประกาศรายชื่อ &rarr;';
+        document.getElementById('back-to-months').innerText = 'กลับไปหน้าเลือกเดือน';
+        document.getElementById('table-title').innerText = `ประกาศรายชื่อ - ${monthNamesTH[currentMonth] || ''}`;
+        document.getElementById('search-input').placeholder = 'พิมพ์ชื่อ หรือ อีเมล เพื่อค้นหา...';
+        
+        document.getElementById('label-search-note').innerText = 'คำแนะนำในการค้นหา:';
+        document.getElementById('search-note').innerText = 'สามารถค้นหาด้วย ชื่อ-นามสกุล ในช่องค้นหาได้ หากไม่พบข้อมูล แนะนำให้ลองค้นหาด้วย อีเมลมหาวิทยาลัย';
+        document.getElementById('pdpa-note').innerText = 'ระบบมีการปกปิดข้อมูลส่วนบุคคลบางส่วนด้วย XXX เพื่อรักษาความเป็นส่วนตัวและความปลอดภัยของข้อมูล';
+        
+        document.getElementById('total-rights-label').innerText = 'จำนวนสิทธิ์สุ่มรางวัลรวมประจำเดือน';
+        document.getElementById('total-rights-desc').innerText = 'มีสิทธิ์ที่เข้าร่วมจับรางวัลรวมทั้งหมดในรอบนี้';
+        document.getElementById('total-rights-unit').innerText = 'สิทธิ์';
+
+        document.getElementById('th-rank').innerText = 'อันดับ';
+        document.getElementById('th-name').innerText = 'ชื่อ-นามสกุล / อีเมล';
+        document.getElementById('th-status').innerText = 'สถานะ';
+        document.getElementById('th-steps').innerText = 'จำนวนก้าว';
+        document.getElementById('th-count').innerText = 'จำนวนสิทธิ์';
+        document.getElementById('th-action').innerText = 'เลขสิทธิ์';
+        document.getElementById('btn-modal-close').innerText = 'ปิดหน้าต่าง';
+      }
+    }
+  </script>
+</body>
+</html>
