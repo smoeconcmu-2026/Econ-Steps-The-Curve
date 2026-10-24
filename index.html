@@ -78,14 +78,14 @@
           <span class="text-pink-600 text-sm font-semibold flex items-center gap-1" id="btn-view-sep">เข้าดูประกาศรายชื่อ &rarr;</span>
         </button>
 
-        <!-- October (Disabled) -->
-        <div class="bg-slate-100/80 p-6 rounded-2xl border border-slate-200 opacity-60 flex flex-col justify-between h-40">
+        <!-- October (Active - Sheet4) -->
+        <button onclick="selectMonth('october')" class="bg-white p-6 rounded-2xl shadow-md border-2 border-pink-500 hover:border-pink-600 hover:shadow-lg transition text-left flex flex-col justify-between h-40 group">
           <div>
-            <span class="bg-slate-200 text-slate-600 text-xs px-2.5 py-1 rounded-full font-semibold" id="badge-soon3">เร็วๆ นี้</span>
-            <h3 class="text-xl font-bold text-slate-500 mt-3" id="month-oct">ตุลาคม</h3>
+            <span class="bg-pink-100 text-pink-700 text-xs px-2.5 py-1 rounded-full font-semibold" id="badge-oct">พร้อมตรวจสอบ</span>
+            <h3 class="text-xl font-bold text-slate-800 mt-3 group-hover:text-pink-600 transition" id="month-oct">ตุลาคม</h3>
           </div>
-          <span class="text-slate-400 text-sm" id="desc-soon3">ยังไม่เปิดให้ตรวจสอบ</span>
-        </div>
+          <span class="text-pink-600 text-sm font-semibold flex items-center gap-1" id="btn-view-oct">เข้าดูประกาศรายชื่อ &rarr;</span>
+        </button>
       </div>
     </section>
 
@@ -176,7 +176,8 @@
     const MONTH_SHEETS = {
       july: 'Sheet1',   
       august: 'Sheet2',
-      september: 'Sheet3'
+      september: 'Sheet3',
+      october: 'Sheet4'
     };
 
     let currentMonth = 'july';
@@ -307,163 +308,3 @@
     function toggleLanguage() {
       currentLang = currentLang === 'th' ? 'en' : 'th';
       updateText();
-      if (!document.getElementById('page-table').classList.contains('hidden')) {
-        renderTable(rawData);
-      }
-    }
-
-    function goToPage(pageId) {
-      document.getElementById('page-lang').classList.add('hidden');
-      document.getElementById('page-months').classList.add('hidden');
-      document.getElementById('page-table').classList.add('hidden');
-      document.getElementById(`page-${pageId}`).classList.remove('hidden');
-
-      if (pageId === 'table') {
-        fetchSheetData();
-      }
-    }
-
-    function renderTable(data) {
-      const tbody = document.getElementById('table-body');
-      tbody.innerHTML = '';
-
-      if (data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center p-8 text-slate-400">${currentLang === 'th' ? 'ไม่พบข้อมูลที่ค้นหา (ลองค้นหาด้วยอีเมลมหาวิทยาลัย)' : 'No matching data found (Try searching by university email)'}</td></tr>`;
-        return;
-      }
-
-      data.forEach(item => {
-        const tr = document.createElement('tr');
-        tr.className = 'hover:bg-pink-50/50 transition';
-        tr.innerHTML = `
-          <td class="p-4 text-center font-bold text-slate-400">#${item.rank}</td>
-          <td class="p-4 font-semibold text-slate-800">${item.maskedName}</td>
-          <td class="p-4"><span class="bg-pink-50 text-pink-700 border border-pink-200 px-2.5 py-1 rounded-md text-xs font-medium">${item.status}</span></td>
-          <td class="p-4 text-right font-semibold text-slate-700">${item.steps.toLocaleString()}</td>
-          <td class="p-4 text-center font-bold text-pink-600">${item.count.toLocaleString()}</td>
-          <td class="p-4 text-center">
-            <button onclick="openModal(${item.rank})" class="bg-pink-50 hover:bg-pink-100 text-pink-700 font-semibold text-xs px-3 py-1.5 rounded-lg border border-pink-200 transition shadow-sm">
-              🎟️ ${currentLang === 'th' ? 'ดูเลขสิทธิ์' : 'View Rights'}
-            </button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function handleSearch() {
-      const query = document.getElementById('search-input').value.trim().toLowerCase();
-      const filtered = rawData.filter(item => 
-        item.realName.toLowerCase().includes(query) || 
-        item.maskedName.toLowerCase().includes(query)
-      );
-      renderTable(filtered);
-    }
-
-    function openModal(rank) {
-      const item = rawData.find(d => d.rank === rank);
-      if (!item) return;
-
-      document.getElementById('modal-user-name').innerText = (currentLang === 'th' ? 'เลขสิทธิ์ของ: ' : 'Rights for: ') + item.maskedName;
-      document.getElementById('modal-user-info').innerText = (currentLang === 'th' ? 'อันดับ #' : 'Rank #') + `${item.rank} | ` + (currentLang === 'th' ? 'จำนวนสิทธิ์ทั้งหมด: ' : 'Total Rights: ') + `${item.count.toLocaleString()}`;
-
-      if (!item.tickets) {
-        document.getElementById('modal-tickets-list').innerHTML = `<span class="text-slate-400 p-2">${currentLang === 'th' ? 'ไม่มีข้อมูลเลขสิทธิ์' : 'No rights found'}</span>`;
-      } else {
-        const ticketArray = item.tickets.split(/[,;\n]/).map(t => t.trim()).filter(t => t !== '');
-        const list = ticketArray.map(t => `<span class="bg-white border border-pink-200 px-2.5 py-1 rounded shadow-sm hover:border-pink-400 text-pink-900 font-semibold">${t}</span>`).join('');
-        document.getElementById('modal-tickets-list').innerHTML = list;
-      }
-
-      document.getElementById('ticket-modal').classList.remove('hidden');
-    }
-
-    function closeModal() {
-      document.getElementById('ticket-modal').classList.add('hidden');
-    }
-
-    function updateText() {
-      const monthNamesTH = { july: 'กรกฎาคม', august: 'สิงหาคม', september: 'กันยายน' };
-      const monthNamesEN = { july: 'July', august: 'August', september: 'September' };
-
-      if (currentLang === 'en') {
-        document.getElementById('app-title').innerText = 'Activity Rights Checking System';
-        document.getElementById('welcome-heading').innerText = 'Activity Rights Checking System';
-        document.getElementById('welcome-sub').innerText = 'Please select a language to proceed';
-        
-        document.getElementById('title-months').innerText = 'Select Month';
-        document.getElementById('month-july').innerText = 'July';
-        document.getElementById('month-aug').innerText = 'August';
-        document.getElementById('month-sep').innerText = 'September';
-        document.getElementById('month-oct').innerText = 'October';
-        document.getElementById('badge-july').innerText = 'Available';
-        document.getElementById('badge-aug').innerText = 'Available';
-        document.getElementById('badge-sep').innerText = 'Available';
-        document.getElementById('badge-soon3').innerText = 'Coming Soon';
-        document.getElementById('desc-soon3').innerText = 'Not available yet';
-        document.getElementById('btn-view-july').innerHTML = 'View List &rarr;';
-        document.getElementById('btn-view-aug').innerHTML = 'View List &rarr;';
-        document.getElementById('btn-view-sep').innerHTML = 'View List &rarr;';
-        document.getElementById('back-to-months').innerText = 'Back to month selection';
-        document.getElementById('table-title').innerText = `Announced List - ${monthNamesEN[currentMonth] || ''}`;
-        document.getElementById('search-input').placeholder = 'Type name or email to search...';
-        
-        // อัปเดตภาษาอังกฤษตรงคำแนะนำค้นหา & PDPA
-        document.getElementById('label-search-note').innerText = 'Search Tip:';
-        document.getElementById('search-note').innerText = 'You can search by Full Name. If not found, try searching with your University Email.';
-        document.getElementById('pdpa-note').innerText = 'Some personal data is partially masked with XXX to maintain privacy and data security.';
-        
-        document.getElementById('total-rights-label').innerText = 'Monthly Total Lucky Draw Rights';
-        document.getElementById('total-rights-desc').innerText = 'Total rights submitted for the lucky draw in this round';
-        document.getElementById('total-rights-unit').innerText = 'rights';
-
-        document.getElementById('th-rank').innerText = 'Rank';
-        document.getElementById('th-name').innerText = 'Name / Email';
-        document.getElementById('th-status').innerText = 'Status';
-        document.getElementById('th-steps').innerText = 'Step Count';
-        document.getElementById('th-count').innerText = 'Total Rights';
-        document.getElementById('th-action').innerText = 'Right Numbers';
-        document.getElementById('btn-modal-close').innerText = 'Close';
-      } else {
-        document.getElementById('app-title').innerText = 'ระบบตรวจสอบสิทธิ์กิจกรรม';
-        document.getElementById('welcome-heading').innerText = 'ระบบตรวจสอบสิทธิ์กิจกรรม';
-        document.getElementById('welcome-sub').innerText = 'กรุณาเลือกภาษาเพื่อเริ่มต้นใช้งาน';
-
-        document.getElementById('title-months').innerText = 'เลือกเดือนที่ต้องการตรวจสอบ';
-        document.getElementById('month-july').innerText = 'กรกฎาคม';
-        document.getElementById('month-aug').innerText = 'สิงหาคม';
-        document.getElementById('month-sep').innerText = 'กันยายน';
-        document.getElementById('month-oct').innerText = 'ตุลาคม';
-        document.getElementById('badge-july').innerText = 'พร้อมตรวจสอบ';
-        document.getElementById('badge-aug').innerText = 'พร้อมตรวจสอบ';
-        document.getElementById('badge-sep').innerText = 'พร้อมตรวจสอบ';
-        document.getElementById('badge-soon3').innerText = 'เร็วๆ นี้';
-        document.getElementById('desc-soon3').innerText = 'ยังไม่เปิดให้ตรวจสอบ';
-        document.getElementById('btn-view-july').innerHTML = 'เข้าดูประกาศรายชื่อ &rarr;';
-        document.getElementById('btn-view-aug').innerHTML = 'เข้าดูประกาศรายชื่อ &rarr;';
-        document.getElementById('btn-view-sep').innerHTML = 'เข้าดูประกาศรายชื่อ &rarr;';
-        document.getElementById('back-to-months').innerText = 'กลับไปหน้าเลือกเดือน';
-        document.getElementById('table-title').innerText = `ประกาศรายชื่อ - ${monthNamesTH[currentMonth] || ''}`;
-        document.getElementById('search-input').placeholder = 'พิมพ์ชื่อ หรือ อีเมล เพื่อค้นหา...';
-        
-        // อัปเดตภาษาไทยตรงคำแนะนำค้นหา & PDPA
-        document.getElementById('label-search-note').innerText = 'คำแนะนำในการค้นหา:';
-        document.getElementById('search-note').innerText = 'สามารถค้นหาด้วย ชื่อ-นามสกุล ในช่องค้นหาได้ หากไม่พบข้อมูล แนะนำให้ลองค้นหาด้วย อีเมลมหาวิทยาลัย';
-        document.getElementById('pdpa-note').innerText = 'ระบบมีการปกปิดข้อมูลส่วนบุคคลบางส่วนด้วย XXX เพื่อรักษาความเป็นส่วนตัวและความปลอดภัยของข้อมูล';
-        
-        document.getElementById('total-rights-label').innerText = 'จำนวนสิทธิ์สุ่มรางวัลรวมประจำเดือน';
-        document.getElementById('total-rights-desc').innerText = 'มีสิทธิ์ที่เข้าร่วมจับรางวัลรวมทั้งหมดในรอบนี้';
-        document.getElementById('total-rights-unit').innerText = 'สิทธิ์';
-
-        document.getElementById('th-rank').innerText = 'อันดับ';
-        document.getElementById('th-name').innerText = 'ชื่อ-นามสกุล / อีเมล';
-        document.getElementById('th-status').innerText = 'สถานะ';
-        document.getElementById('th-steps').innerText = 'จำนวนก้าว';
-        document.getElementById('th-count').innerText = 'จำนวนสิทธิ์';
-        document.getElementById('th-action').innerText = 'เลขสิทธิ์';
-        document.getElementById('btn-modal-close').innerText = 'ปิดหน้าต่าง';
-      }
-    }
-  </script>
-</body>
-</html>
